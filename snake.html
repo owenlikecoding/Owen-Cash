@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Owen Cash snake game</title>
+    <style>
+        @font-face {
+            font-family: "logo";
+            src: url("../fonts/MAROLA__.TTF");
+        }
+
+        @font-face {
+            font-family: "main";
+            src: url(../fonts/LEMONMILK-Bold.otf);
+        }
+
+        * {
+            font-family: main;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: #0C1821;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid white;
+            background-color: #324A5F;
+        }
+
+        #p1 {
+            color: #CCC9DC;
+            position: absolute;
+            /* left: 100px; */
+            top: 10px;
+            font-size: x-large;
+        }
+
+        #p2 {
+            color: #CCC9DC;
+            position: absolute;
+            /* left: 100px; */
+            top: 30px;
+            font-size: x-large;
+            margin-top: 35px;
+        }
+
+        #score {
+            color: yellow;
+        }
+
+        #high {
+            color: #E43F5A;
+        }
+
+        /* move claimowenbucks button to the bottom of the screen */
+        #claimowencash {
+            position: absolute;
+            bottom: 12%;
+            left: 45%;
+        }
+
+        .button-38 {
+            position: relative;
+            background-color: #FFFFFF;
+            border: 0;
+            border-radius: .5rem;
+            box-sizing: border-box;
+            color: #111827;
+            font-family: "Inter var", ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-size: .875rem;
+            font-weight: 600;
+            line-height: 1.25rem;
+            padding: .75rem 1rem;
+            text-align: center;
+            text-decoration: none #D1D5DB solid;
+            text-decoration-thickness: auto;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .button-38:hover {
+            background-color: rgb(249, 250, 251);
+        }
+
+        .button-38:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+
+        .button-38:focus-visible {
+            box-shadow: none;
+        }
+
+        ul {
+            list-style-type: none;
+            color: rgb(255, 47, 47);
+            text-shadow: black 2px 2px 1px;
+        }
+
+        button {
+            text-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="p1">Score:<span id="score"></span></p>
+    <canvas width="400" height="400" id="game"></canvas><br>
+    <button id="claimowencash" class="button-38">Claim owen cash</button>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
+        import { getDatabase, get, ref, update, set, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoio-wzULakgi_l7rX7wwtyI2j1qcy5Zs",
+            authDomain: "owencash-becf7.firebaseapp.com",
+            projectId: "owencash-becf7",
+            storageBucket: "owencash-becf7.appspot.com",
+            messagingSenderId: "484988428447",
+            appId: "1:484988428447:web:94ea71cd50dee432c282aa",
+            measurementId: "G-87LT4JCY9W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const usersRef = ref(db, 'users/');
+        var claimowencash = document.getElementById('claimowencash');
+        var canvas = document.getElementById('game');
+        var context = canvas.getContext('2d');
+        var grid = 16;
+        var count = 0;
+        var score = 0;
+        var max = 0;
+
+        var snake = {
+            x: 160,
+            y: 160,
+
+            // snake velocity. moves one grid length every frame in either the x or y direction
+            dx: grid,
+            dy: 0,
+
+            // keep track of all grids the snake body occupies
+            cells: [],
+
+            // length of the snake. grows when eating an apple
+            maxCells: 4
+        };
+        var food = {
+            x: 320,
+            y: 320
+        };
+
+        // get random whole numbers in a specific range
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min)) + min;
+        }
+        // game loop
+        function loop() {
+            requestAnimationFrame(loop);
+            // slow game loop to 15 fps instead of 60 (60/15 = 4)
+            if (++count < 4) {
+                return;
+            }
+            count = 0;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            // move snake by it's velocity
+            snake.x += snake.dx;
+            snake.y += snake.dy;
+            // wrap snake position horizontally on edge of screen
+            if (snake.x < 0) {
+                snake.x = canvas.width - grid;
+            }
+            else if (snake.x >= canvas.width) {
+                snake.x = 0;
+            }
+
+            // wrap snake position vertically on edge of screen
+            if (snake.y < 0) {
+                snake.y = canvas.height - grid;
+            }
+            else if (snake.y >= canvas.height) {
+                snake.y = 0;
+            }
+            // keep track of where snake has been. front of the array is always the head
+            snake.cells.unshift({ x: snake.x, y: snake.y });
+            // remove cells as we move away from them
+            if (snake.cells.length > snake.maxCells) {
+                snake.cells.pop();
+            }
+            // draw food
+            context.fillStyle = 'white';
+            context.fillRect(food.x, food.y, grid - 1, grid - 1);
+            // draw snake one cell at a time
+            context.fillStyle = '#E43F5A';
+            snake.cells.forEach(function (cell, index) {
+
+                // drawing 1 px smaller than the grid creates a grid effect in the snake body so you can see how long it is
+                context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                // snake ate food
+                if (cell.x === food.x && cell.y === food.y) {
+                    snake.maxCells++;
+                    score += 1;
+                    document.getElementById('score').innerHTML = '&nbsp;' + score;
+                    // canvas is 400x400 which is 25x25 grids 
+                    food.x = getRandomInt(0, 25) * grid;
+                    food.y = getRandomInt(0, 25) * grid;
+                    // make a function to claim owen cash
+
+                }
+                // check collision with all cells after this one (modified bubble sort)
+                for (var i = index + 1; i < snake.cells.length; i++) {
+
+                    // snake occupies same space as a body part. reset game
+                    if (cell.x === snake.cells[i].x && cell.y === snake.cells[i].y) {
+                        if (score > max) {
+                            max = score;
+                        }
+                        snake.x = 160;
+                        snake.y = 160;
+                        snake.cells = [];
+                        snake.maxCells = 4;
+                        snake.dx = grid;
+                        snake.dy = 0;
+                        score = 0;
+                        food.x = getRandomInt(0, 25) * grid;
+                        food.y = getRandomInt(0, 25) * grid;
+                        document.getElementById('high').innerHTML = '&nbsp;' + max;
+                        // if your reading this code replace this with a await function heheheheheheh
+                        window.setTimeout(function () {
+                            window.location.reload();
+                        }, 300);
+                    }
+                }
+                claimowencash.addEventListener('click', function () {
+                    // stop loop on click
+                    get(ref(db, "users/" + window.localStorage.getItem("username"))).then((snapshot) => {
+                        update(ref(db, "users/" + window.localStorage.getItem("username")), {
+                            balance: snapshot.val().balance + parseInt(score)
+                        });
+                    }).catch((error) => {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            alert("You have claimed " + score + " Owen Cash!")
+                        }
+                    });
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 300);
+                });
+            });
+        }
+        // listen to keyboard events to move the snake
+        document.addEventListener('keydown', function (e) {
+            // prevent snake from backtracking on itself by checking that it's 
+            // not already moving on the same axis (pressing left while moving
+            // left won't do anything, and pressing right while moving left
+            // shouldn't let you collide with your own body)
+
+            // left arrow key
+            if (e.which === 37 && snake.dx === 0) {
+                snake.dx = -grid;
+                snake.dy = 0;
+            }
+            // up arrow key
+            else if (e.which === 38 && snake.dy === 0) {
+                snake.dy = -grid;
+                snake.dx = 0;
+            }
+            // right arrow key
+            else if (e.which === 39 && snake.dx === 0) {
+                snake.dx = grid;
+                snake.dy = 0;
+            }
+            // down arrow key
+            else if (e.which === 40 && snake.dy === 0) {
+                snake.dy = grid;
+                snake.dx = 0;
+            }
+        });
+        // start the game
+        requestAnimationFrame(loop);
+    </script>
+
+</body>
+
+</html>
