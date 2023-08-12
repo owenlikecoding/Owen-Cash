@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owencash</title>
+</head>
+
+<body>
+    <div id="top">
+        <h1>Owen Cash</h1>
+    </div>
+    <div id="SignUpContainer">
+        <div id="SignUpBox">
+            <h2>Sign Up</h2>
+            <input type="text" name="username1" id="username1" placeholder="username"><br>
+            <input type="text" name="password1" id="password1" placeholder="password"><br>
+            <button id="SignUpBtn" class="button-38">Sign Up</button>
+        </div>
+        <div id="SignInBox">
+            <h2>Sign In</h2>
+            <input type="text" name="username2" id="username2" placeholder="username"><br>
+            <input type="text" name="password2" id="password2" placeholder="password"><br>
+            <button id="SignInBtn" class="button-38">Sign In</button>
+        </div>
+    </div>
+    <style>
+        /*  import font from folder*/
+
+        @font-face {
+            font-family: "logo";
+            src: url("../fonts/MAROLA__.TTF");
+        }
+
+        @font-face {
+            font-family: "main";
+            src: url("../fonts/LEMONMILK-Bold.otf");
+        }
+
+        * {
+            margin: 0;
+        }
+
+        #top {
+            background-color: #000000;
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            font-family: logo;
+        }
+
+        body {
+            background-image: linear-gradient(rgb(36, 36, 223), rgb(143, 195, 255));
+            background-repeat: no-repeat;
+            height: 100vh;
+            font-family: main;
+
+        }
+
+        #SignUpContainer {
+            text-align: center;
+            height: 50%;
+            width: 50%;
+            margin-left: 25%;
+            margin-top: 5%;
+
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+            margin-top: .5vh;
+            font-family: main;
+        }
+
+        h2 {
+            color: white;
+            text-shadow: #000000 3px 3px 1px;
+        }
+
+
+        /* CSS */
+        .button-86 {
+            all: unset;
+            width: 100px;
+            height: 30px;
+            font-size: 16px;
+            background: transparent;
+            border: none;
+            position: relative;
+            color: #f0f0f0;
+            cursor: pointer;
+            z-index: 1;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .button-86::after,
+        .button-86::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            z-index: -99999;
+            transition: all .4s;
+        }
+
+        #SignInBox {
+            margin-top: 5%;
+        }
+
+
+
+        /* CSS */
+        .button-38 {
+            background-color: #FFFFFF;
+            border: 0;
+            border-radius: .5rem;
+            box-sizing: border-box;
+            color: #111827;
+            font-family: "Inter var", ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            font-size: .875rem;
+            font-weight: 600;
+            line-height: 1.25rem;
+            padding: .75rem 1rem;
+            text-align: center;
+            text-decoration: none #D1D5DB solid;
+            text-decoration-thickness: auto;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .button-38:hover {
+            background-color: rgb(249, 250, 251);
+        }
+
+        .button-38:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+
+        .button-38:focus-visible {
+            box-shadow: none;
+        }
+    </style>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-analytics.js";
+        import { getDatabase, get, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoio-wzULakgi_l7rX7wwtyI2j1qcy5Zs",
+            authDomain: "owencash-becf7.firebaseapp.com",
+            projectId: "owencash-becf7",
+            storageBucket: "owencash-becf7.appspot.com",
+            messagingSenderId: "484988428447",
+            appId: "1:484988428447:web:94ea71cd50dee432c282aa",
+            measurementId: "G-87LT4JCY9W"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const usersRef = ref(db, 'users/');
+        const username1 = document.getElementById('username1');
+        const password1 = document.getElementById('password1');
+        const username2 = document.getElementById('username2');
+        const password2 = document.getElementById('password2');
+        const SignUpBtn = document.getElementById('SignUpBtn');
+        const SignInBtn = document.getElementById('SignInBtn');
+        SignUpBtn.onclick = function () {
+            // check if user already exists 
+            get(usersRef).then((snapshot) => {
+                if (username1.value == snapshot.val().username) {
+                    console.log(snapshot.val());
+                } else {
+                    set(ref(db, 'users/' + username1.value), {
+                        username: username1.value,
+                        password: password1.value,
+                        balance: 0
+                    });
+                    window.localStorage.setItem('username', username1.value);
+                    window.location.href = "./home.html";
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+        SignInBtn.onclick = function () {
+            get(usersRef).then((snapshot) => {
+                if (username2.value == snapshot.val().username) {
+                    window.localStorage.setItem('username', username2.value);
+                    window.location.href = "./home.html";
+                } else {
+                    console.log('user does not exist');
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+
+    </script>
+    <script>
+        if(window.localStorage.getItem("username") != null) {
+            window.location.href = "./home.html"
+        }
+
+         
+    </script>
+</body>
+
+</html>
