@@ -45,66 +45,78 @@
         var medium = document.getElementById("medium");
         var hard = document.getElementById("hard");
         var extreme = document.getElementById("extreme");
-        function easy1() {
-            // make random number beetwen 1 and 10
-            var num1 = Math.floor(Math.random() * 10) + 1;
-            var num2 = Math.floor(Math.random() * 10) + 1;
-            var answer = num1 * num2;
-            let question = prompt("What is " + num1 + " times " + num2 + "?");
-            if (question == answer) {
-                alert("Correct! you won 3 owen bucks!");
-                set(ref(db, "users/" + window.localStorage.getItem("username") + "/balance"), get(ref(db, "users/" + window.localStorage.getItem("username") + "/balance")) + parseInt(3))
-            } else {
-                alert("Incorrect! bozzo!");
-            }
-        }
-        
-        function medium2() {
-            // make random number beetwen 1 and 100
-            var num1 = Math.floor(Math.random() * 100) + 1;
-            var num2 = Math.floor(Math.random() * 100) + 1;
-            var answer = num1 * num2;
-            let question = prompt("What is " + num1 + " times " + num2 + "?");
-            if (question == answer) {
-                alert("Correct! you won 5 owen bucks!");
-                set(ref(db, "users/" + window.localStorage.getItem("username") + "/balance"), get(ref(db, "users/" + window.localStorage.getItem("username") + "/balance")) + parseInt(5))
-            } else {
-                alert("Incorrect! bozzo!");
-            }
-        }
-        function hard3() {
-            // make random number beetwen 1 and 1000
-            var num1 = Math.floor(Math.random() * 1000) + 1;
-            var num2 = Math.floor(Math.random() * 1000) + 1;
-            var answer = num1 * num2;
-            let question = prompt("What is " + num1 + " times " + num2 + "?");
-            if (question == answer) {
-                alert("Correct! you won 10 owen bucks!");
-                set(ref(db, "users/" + window.localStorage.getItem("username") + "/balance"), get(ref(db, "users/" + window.localStorage.getItem("username") + "/balance")) + parseInt(10))
-            } else {
-                alert("Incorrect! bozzo!");
-            }
-        }
-        function extreme4() {
-            // create a random qaudratic equation
-            var a = Math.floor(Math.random() * 1000) + 1;
-            var b = Math.floor(Math.random() * 1000) + 1;
-            var c = Math.floor(Math.random() * 1000) + 1;
-            var answer = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
-            let question = prompt("What is the answer to as a qaudratic" + a + "x^2 + " + b + "x + " + c + "?");
-            if (question == answer) {
-                alert("Correct! you won 25 owen bucks!");
-                set(ref(db, "users/" + window.localStorage.getItem("username") + "/balance"), get(ref(db, "users/" + window.localStorage.getItem("username") + "/balance")) + parseInt(25))
-            } else {
-                alert("Incorrect! bozzo!");
+        get(ref(db, "users/" + window.localStorage.getItem("username"))).then(function (snapshot) {
+            function easy1() {
+                // make random number beetwen 1 and 10
+                var num1 = Math.floor(Math.random() * 10) + 1;
+                var num2 = Math.floor(Math.random() * 10) + 1;
+                var answer = num1 * num2;
+                let question = prompt("What is " + num1 + " times " + num2 + "?");
+                if (question == answer) {
+                    alert("Correct! you won 3 owen bucks!");
+                    update(ref(db, "users/" + window.localStorage.getItem("username")), {
+                        balance: parseInt(snapshot.val().balance) + 3
+                    });
+                } else {
+                    alert("Incorrect! bozzo!");
+                }
             }
 
-        }
+            function medium2() {
+                // make random number beetwen 1 and 100
+                var num1 = Math.floor(Math.random() * 100) + 1;
+                var num2 = Math.floor(Math.random() * 100) + 1;
+                var answer = num1 * num2;
+                let question = prompt("What is " + num1 + " times " + num2 + "?");
+                if (question == answer) {
+                    alert("Correct! you won 5 owen bucks!");
+                    update(ref(db, "users/" + window.localStorage.getItem("username")), {
+                        balance: parseInt(snapshot.val().balance) + 5
+                    });
+                } else {
+                    alert("Incorrect! bozzo!");
+                }
+            }
+            function hard3() {
+                // make random number beetwen 1 and 1000
+                var num1 = Math.floor(Math.random() * 1000) + 1;
+                var num2 = Math.floor(Math.random() * 1000) + 1;
+                var answer = num1 * num2;
+                let question = prompt("What is " + num1 + " times " + num2 + "?");
+                if (question == answer) {
+                    alert("Correct! you won 10 owen bucks!");
+                    update(ref(db, "users/" + window.localStorage.getItem("username")), {
+                        balance: parseInt(snapshot.val().balance) + 10
+                    });
+                } else {
+                    alert("Incorrect! bozzo!");
+                }
+            }
+            function extreme4() {
+                // create a random qaudratic equation
+                var a = Math.floor(Math.random() * 1000) + 1;
+                var b = Math.floor(Math.random() * 1000) + 1;
+                var c = Math.floor(Math.random() * 1000) + 1;
+                var answer = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+                let question = prompt("What is the answer to as a qaudratic" + a + "x^2 + " + b + "x + " + c + "?");
+                if (question == answer) {
+                    alert("Correct! you won 25 owen bucks!");
+                    update(ref(db, "users/" + window.localStorage.getItem("username")), {
+                        balance: parseInt(snapshot.val().balance) + 25
+                    });
+                } else {
+                    alert("Incorrect! bozzo!");
+                }
+
+            }
+            easy.addEventListener("click", easy1);
+            medium.addEventListener("click", medium2);
+            hard.addEventListener("click", hard3);
+            extreme.addEventListener("click", extreme4);
+        });
+
         // event listerns
-        easy.addEventListener("click", easy1);
-        medium.addEventListener("click", medium2);
-        hard.addEventListener("click", hard3);
-        extreme.addEventListener("click", extreme4);
+
 
     </script>
     <style>

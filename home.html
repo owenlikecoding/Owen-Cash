@@ -64,14 +64,11 @@
         const usersRef = ref(db, 'users/');
         var balance = document.getElementById('balance');
         var username = document.getElementById('username');
-        window.setTimeout(function () {
-            get(ref(db, "users/" + window.localStorage.getItem("username"))).then((snapshot) => {
-                username.innerHTML = "username: " + snapshot.val().username;
-                balance.innerHTML = 'Balance: ' + snapshot.val().balance;
-            }).catch((error) => {
-                console.error(error);
-            });
-        }, 300);
+        const userRef = ref(db, "users/" + window.localStorage.getItem("username"));
+        onValue(userRef, (snapshot) => {
+            balance.innerHTML = "Balance: " + snapshot.val().balance;
+            username.innerHTML = "Username: " + snapshot.val().username;
+        });
         function transaction() {
             let name = prompt("who would you like to send money to?");
             get(ref(db, "users/" + name)).then((snapshot) => {
@@ -197,32 +194,38 @@
             margin-top: 5%;
 
         }
+
         /*make the text in the top animated*/
-         h1 {
+        h1 {
             animation: text 3s infinite;
         }
+
         @keyframes text {
             0% {
                 color: rgb(255, 255, 255);
                 margin-left: 0%;
             }
+
             30% {
                 color: rgb(255, 0, 0);
                 margin-left: 0%;
             }
+
             50% {
                 color: rgb(0, 157, 255);
                 margin-left: 0%;
             }
+
             80% {
                 color: rgb(0, 255, 68);
                 margin-left: 0%;
             }
+
             100% {
                 color: rgb(255, 255, 255);
                 margin-left: 0%;
             }
-            
+
         }
 
         input {
